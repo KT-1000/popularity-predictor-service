@@ -105,8 +105,7 @@ class PopularityPredictor:
         validated_arr = [[pd.Timestamp(validated_json['timestamp']), validated_json['description']]]
         article_info = np.array(validated_arr)
         prediction = model.predict(article_info)
-
-        # request.headers['Content-Type'] == 'application/json'
+        
         data = {
             'prediction': prediction[0]
         }
@@ -128,7 +127,7 @@ def popularity_predictor():
     valid_json = predictor.validate_input(raw_input)
 
     # unpickle trained ML model
-    ml_model = (predictor.load_model('data/pipe.pkl'))
+    ml_model = (predictor.load_model('/Users/katiesimmons/Projects/post-popularity/popularity_predictor/data/pipe.pkl'))
 
     predicted_score = predictor.make_prediction(valid_json, ml_model)
 
@@ -139,4 +138,4 @@ if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    app.run(host='0.0.0.0', port=8001)
+    app.run(host='0.0.0.0', port=8002)
