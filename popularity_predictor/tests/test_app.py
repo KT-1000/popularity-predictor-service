@@ -1,4 +1,4 @@
-"""Tests for test_post_popularity.py"""
+"""Tests for app.py"""
 import pytest
 import unittest
 
