@@ -9,12 +9,14 @@ The goal of this project is to expand my data engineering knowledge by exploring
 
 ##  <a name="technologies"></a>key technologies
 - [Python 3](https://www.python.org/downloads/)
-- [Falcon](https://falconframework.org/#sectionAbout)
+- [Flask](http://flask.pocoo.org/)
 - [Docker](https://www.docker.com/what-docker)
 
 ##  <a name="install-configure"></a>installation and configuration
 To install post-popularity, first fork and clone this repo. Then, pop open a terminal and cd to your local 
-`post-popularity` repo.
+`post-popularity` repo. Note that this service is expecting a `data` directory containing `.pkl` file(s) - 
+the scikit_learn pipeline - which is not included here due to space and privacy concerns. Please ensure that you've
+added `post-popularity/popularity_predictor/data/pipe.pkl` locally before starting the flask app.
 
 If you have Anaconda3 installed, simply create a conda environment and then run the following to install 
 required dependencies:
