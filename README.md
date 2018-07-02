@@ -9,37 +9,31 @@ The goal of this project is to expand my data engineering knowledge by exploring
 
 ##  <a name="technologies"></a>key technologies
 - [Python 3](https://www.python.org/downloads/)
-- [Falcon](https://falconframework.org/#sectionAbout)
-- [Zappa?](https://www.zappa.io//):
-    - [AWS lambda](https://aws.amazon.com/lambda/)
-    - [AWS API Gateway](https://aws.amazon.com/api-gateway/)
-- [Docker?](https://www.docker.com/what-docker)
+- [Flask](http://flask.pocoo.org/)
+- [Docker](https://www.docker.com/what-docker)
 
 ##  <a name="install-configure"></a>installation and configuration
 To install post-popularity, first fork and clone this repo. Then, pop open a terminal and cd to your local 
-`post-popularity` repo.
- 
-#### Option 1: With Docker - recommended
-Ensure that you have Docker [installed](https://docs.docker.com/get-started/part2/)
+`post-popularity` repo. Note that this service is expecting a `data` directory containing `.pkl` file(s) - 
+the scikit_learn pipeline - which is not included here due to space and privacy concerns. Please ensure that you've
+added `post-popularity/popularity_predictor/data/pipe.pkl` locally before starting the flask app.
+
+If you have Anaconda3 installed, simply create a conda environment and then run the following to install 
+required dependencies:
+
+`while read requirement; do conda install --yes $requirement; done < requirements.txt`
+
+To run the flask app's server:
+
+`python app.py`
+
+Alternatively, ensure that you have Docker [installed](https://docs.docker.com/get-started/part2/)
 and are familiar with [using Docker.](https://docs.docker.com/get-started/)
 
 1. Create the docker image: `docker build -t post-popularity .`
 2. Run the docker docker image containing the web app: `docker run -p 5000:80 post-popularity`
 
 This will start a web server at `http://localhost:5000`.
-
-#### Option 2: Using virtualenv
-1. Create a virtualenv, activate it and install dependencies:
-
-`virtualenv venv`
-
-`source venv bin activate`
-
-`pip install -r requirements.txt`
-
-Note that your commands may be different depending on your OS and global config.
-
-2. Run the app:
 
 ##  <a name="how-to"></a>usage
 `/model` endpoint
