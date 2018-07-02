@@ -10,7 +10,6 @@ from sklearn.preprocessing import OneHotEncoder
 
 app = Flask(__name__)
 
-
 def select_time_column(X):
     return X[:, 0]
 
@@ -54,7 +53,7 @@ class MonthTransformer(TransformerMixin):
 class PopularityPredictor:
     """Predicts popularity of article posted to social media"""
     def __init__(self):
-        pass
+        self.model = self.load_model('/Users/katiesimmons/Projects/post-popularity/popularity_predictor/data/pipe.pkl')
 
     def validate_input(self, json_input):
         """Ensures JSON is valid and in expected format to be used by machine learning model"""
@@ -100,11 +99,11 @@ class PopularityPredictor:
                 'message': e
             })
 
-    def make_prediction(self, validated_json, model):
+    def make_prediction(self, validated_json):
         """Makes prediction by running appropriately formatted JSON through given machine learning model"""
         validated_arr = [[pd.Timestamp(validated_json['timestamp']), validated_json['description']]]
         article_info = np.array(validated_arr)
-        prediction = model.predict(article_info)
+        prediction = self.model.predict(article_info)
         
         data = {
             'prediction': prediction[0]
@@ -118,18 +117,16 @@ class PopularityPredictor:
         return response
 
 
+predictor = PopularityPredictor()
+
+
 @app.route('/popularity-predictor', methods=['POST'])
 def popularity_predictor():
-    predictor = PopularityPredictor()
-
     # validate input JSON representing news article whose popularity is being predicted
     raw_input = request.get_json()
     valid_json = predictor.validate_input(raw_input)
 
-    # unpickle trained ML model
-    ml_model = (predictor.load_model('/Users/katiesimmons/Projects/post-popularity/popularity_predictor/data/pipe.pkl'))
-
-    predicted_score = predictor.make_prediction(valid_json, ml_model)
+    predicted_score = predictor.make_prediction(valid_json)
 
     return predicted_score, 200
 
@@ -138,4 +135,4 @@ if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    app.run(host='0.0.0.0', port=8002)
+    app.run(host='0.0.0.0', port=5001)

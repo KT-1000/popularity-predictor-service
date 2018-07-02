@@ -21,7 +21,7 @@ class TestInputValidation(unittest.TestCase):
         pass
 
 
-class TestPredictionModel(unittest.TestCase):
+class TestPopularityPredictor(unittest.TestCase):
 
     def test_load_model(self):
         pass
