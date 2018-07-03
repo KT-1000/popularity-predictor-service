@@ -5,7 +5,7 @@ def test_valid_input():
     """Tests valid posted JSON """
     json_input = {
         'timestamp': '2015-09-17 20:50:00',
-        'description': ''
+        'description': 'The Seattle Seahawks are a football team owned by Paul Allen.'
     }
     r = requests.post('http://localhost:5000/popularity-predictor', json=json_input)
     try:
