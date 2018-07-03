@@ -1,15 +1,11 @@
-FROM python:alpine
+FROM python:3.6.5
 
-EXPOSE 80
+COPY . /app
 
-RUN pip install gunicorn
+WORKDIR /app/
 
-COPY ./app /app
+RUN pip install -r ./requirements.txt
 
-COPY requirements.txt /app/requirements.txt
+EXPOSE 5000
 
-WORKDIR /app
-
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "main:app"]
+ENTRYPOINT python ./app.py
