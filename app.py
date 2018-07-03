@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 import json
 from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 import logging
 import numpy as np
 import pandas as pd
@@ -9,6 +10,10 @@ from sklearn.base import TransformerMixin
 from sklearn.preprocessing import OneHotEncoder
 
 app = Flask(__name__)
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 
 def select_time_column(X):
     return X[:, 0]
@@ -53,7 +58,7 @@ class MonthTransformer(TransformerMixin):
 class PopularityPredictor:
     """Predicts popularity of article posted to social media"""
     def __init__(self):
-        self.model = self.load_model('/Users/katiesimmons/Projects/post-popularity/popularity_predictor/data/pipe.pkl')
+        self.model = self.load_model('./data/pipe.pkl')
 
     def validate_input(self, json_input):
         """Ensures JSON is valid and in expected format to be used by machine learning model"""
@@ -79,13 +84,14 @@ class PopularityPredictor:
         try:
             validate(json_input, schema)
 
-            return json_input
+            return True, ''
 
-        except ValueError as e:
+        except ValidationError as e:
             logger.error({
                 'error': 'Invalid JSON',
-                'message': e
+                'message': e.message
             })
+            return False, e.message
 
     def load_model(self, model_path, model_version='0.0.0'):
         """Makes specified version of machine learning model available to use"""
@@ -104,17 +110,8 @@ class PopularityPredictor:
         validated_arr = [[pd.Timestamp(validated_json['timestamp']), validated_json['description']]]
         article_info = np.array(validated_arr)
         prediction = self.model.predict(article_info)
-        
-        data = {
-            'prediction': prediction[0]
-        }
-        js = json.dumps(data)
 
-        response = Response(js,
-                            status=200,
-                            mimetype='application/json')
-
-        return response
+        return prediction[0]
 
 
 predictor = PopularityPredictor()
@@ -124,15 +121,27 @@ predictor = PopularityPredictor()
 def popularity_predictor():
     # validate input JSON representing news article whose popularity is being predicted
     raw_input = request.get_json()
-    valid_json = predictor.validate_input(raw_input)
+    is_valid_json, error_msg = predictor.validate_input(raw_input)
+    #
+    return_status = 200
 
-    predicted_score = predictor.make_prediction(valid_json)
+    data = {}
 
-    return predicted_score, 200
+    if is_valid_json:
+        predicted_score = predictor.make_prediction(raw_input)
+        data['prediction'] = predicted_score
+    else:
+        data['error'] = error_msg
+        return_status = 400
+
+    js = json.dumps(data)
+
+    response = Response(js,
+                        status=return_status,
+                        mimetype='application/json')
+
+    return response
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5000)
