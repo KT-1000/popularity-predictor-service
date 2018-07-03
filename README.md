@@ -44,14 +44,14 @@ social media. Currently both timestamp and description fields are required to ma
 
 Endpoint `/popularity-predictor`
 
-Input: POST body containing JSON with valid timestamp and description fields
+**Input**: POST body containing JSON with valid timestamp and description fields
 
 `{
 	"timestamp": "2015-09-17 20:50:00", 
 	"description": "About 20 western Virginia high school students were suspended Thursday after holding a rally to protest a new policy banning vehicles with Confederate flag symbols from the school parking lot and refusing to take off clothing displaying the symbol."
 }`
 
-Output: Returns status and JSON response
+**Output**: Returns status and JSON response
 
 Posting valid and correct JSON will result in a `200 Success` response and the prediction JSON
 
@@ -59,37 +59,39 @@ Posting valid and correct JSON will result in a `200 Success` response and the p
     "prediction": -0.09606195560398303
 }`
 
-Another example of successful prediction
-
 Posting invalid or incorrect JSON will return a `400 Bad Request` response and optionally a JSON-formatted error
 
-Input:
+Example 1:
+
+*Input*:
 
 `{
     "timestamp": "2015-09-17 20:20:01", "description": ""
 }`
 
-Output:
+*Output*:
 
 `{
     "error": "'' is too short"
 }`
 
-Input:
+Example 2:
+
+*Input*:
 
 `{
 	“timestamp”: “22:07:02 2014-09-17”,
 	“description”: “Police are investigating the death of a man whose body was found inside a home in Sammamish Wednesday morning as a homicide.”
 }`
 
-Output:
+*Output*:
 
 `{
     "error": "'Sept 17, 2014 - 1pm' does not match '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'"
 }`
 
 
-##### tests
+#### tests
 With the flask server running at `http://localhost:5000` and from the `post-popularity` dir, 
 running `python tests/test_app.py` will output the result of some custom test functions (issues importing the app 
 combined with time constraints prevented use of more traditional modules like pytest and unittest). Currently, 
