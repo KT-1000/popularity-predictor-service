@@ -15,14 +15,17 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
+# necessary for unpickling data model
 def select_time_column(X):
     return X[:, 0]
 
 
+# necessary for unpickling data model
 def select_text_column(X):
     return X[:, 1]
 
 
+# necessary for unpickling data model
 class DayOfWeekTransformer(TransformerMixin):
     def __init__(self):
         self.one_hot = OneHotEncoder()
@@ -39,6 +42,7 @@ class DayOfWeekTransformer(TransformerMixin):
         return self.one_hot.transform(df_dow.values.reshape(-1, 1))
 
 
+# necessary for unpickling data model
 class MonthTransformer(TransformerMixin):
     def __init__(self):
         self.one_hot = OneHotEncoder()
@@ -114,33 +118,30 @@ class PopularityPredictor:
         return prediction[0]
 
 
+# global so default model doesn't have to be unpickled with each request
 predictor = PopularityPredictor()
 
 
 @app.route('/popularity-predictor', methods=['POST'])
 def popularity_predictor():
+    # default status to 200 OK
+    return_status = 200
+
     # validate input JSON representing news article whose popularity is being predicted
     raw_input = request.get_json()
     is_valid_json, error_msg = predictor.validate_input(raw_input)
-    #
-    return_status = 200
-
-    data = {}
+    json_input = {}
 
     if is_valid_json:
         predicted_score = predictor.make_prediction(raw_input)
-        data['prediction'] = predicted_score
+        json_input['prediction'] = predicted_score
     else:
-        data['error'] = error_msg
+        json_input['error'] = error_msg
         return_status = 400
 
-    js = json.dumps(data)
+    js = json.dumps(json_input)
 
-    response = Response(js,
-                        status=return_status,
-                        mimetype='application/json')
-
-    return response
+    return Response(js, status=return_status, mimetype='application/json')
 
 
 if __name__ == '__main__':
